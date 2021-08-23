@@ -2,7 +2,7 @@
 
 namespace EasyWay.Services
 {
-    public class Class1
+    public class CustomerService
     {
     }
 }
