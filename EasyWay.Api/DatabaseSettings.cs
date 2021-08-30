@@ -10,11 +10,11 @@ namespace EasyWay.Api
     {
         
    
-             public string CustomerCollectionName { get; set; }
+             public string customerCollectionName { get; set; }
              public string deliveryManCollectionName { get; set; }
              public string orderCollectionName { get; set; }
-        public string ConnectionString { get; set; }
-            public string DatabaseName { get; set; }
+             public string ConnectionString { get; set; }
+             public string DatabaseName { get; set; }
      }
 
       

@@ -39,12 +39,22 @@ namespace EasyWay.Api
 
 
             services.AddSingleton<CustomerRepository>();
+            services.AddSingleton<DeliveryManRepository>();
+            services.AddSingleton<OrderRepository>();
 
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+            });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin",
+                    builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
             });
         }
 
@@ -61,7 +71,7 @@ namespace EasyWay.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

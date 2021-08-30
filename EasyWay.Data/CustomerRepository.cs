@@ -18,7 +18,7 @@ namespace EasyWay.Data
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            _customers = database.GetCollection<Customer>(settings.CustomerCollectionName);
+            _customers = database.GetCollection<Customer>(settings.customerCollectionName);
         }
 
         public List<Customer> Get() =>
