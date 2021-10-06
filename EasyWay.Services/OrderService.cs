@@ -8,5 +8,6 @@ namespace EasyWay.Services
 {
     class OrderService
     {
+
     }
 }
