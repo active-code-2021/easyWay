@@ -12,5 +12,7 @@ namespace EasyWay.Core.Entities
         public string CustomerId { get; set; }
         [BsonElement("deliveryManId")]
         public string DeliveryManId { get; set; }
+        [BsonElement("doneOrNot")]
+        public bool DoneOrNot { get; set; } = false;
     }
 }

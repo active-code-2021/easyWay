@@ -20,7 +20,11 @@ namespace EasyWay.Data
 
         public List<Order> Get() =>
             _orders.Find(order => true).ToList();
-
+        public List<Order> doneOrNot()
+        {
+            var order = _orders.Find(o => !o.DoneOrNot);
+            return order.ToList();
+        }
         public Order Get(string id) =>
             _orders.Find<Order>(order => order.Id == id).FirstOrDefault();
 
