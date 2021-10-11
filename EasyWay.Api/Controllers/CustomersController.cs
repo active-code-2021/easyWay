@@ -43,13 +43,7 @@ namespace CustomersApi.Controllers
 
             return CreatedAtRoute("GetCustomer", new { id = customer.Id.ToString() }, customer);
         }
-        [HttpPost]
-        public ActionResult<Order> Create(Order order)
-        {
-            _orderRepository.Create(order);
-
-            return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
-        }
+     
 
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Customer customerIn)
