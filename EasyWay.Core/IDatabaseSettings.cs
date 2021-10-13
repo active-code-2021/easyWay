@@ -10,7 +10,8 @@ namespace EasyWay.Core
     {
         string customerCollectionName { get; set; }
         string deliveryManCollectionName { get; set; }
-        public string orderCollectionName { get; set; }
+        public string orderCollectionName { get; set; } 
+        //public string AddressCollectionName { get; set; }
         string ConnectionString { get; set; }
         string DatabaseName { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using EasyWay.Core.Entities;
 using EasyWay.Data;
+using EasyWay.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 namespace EasyWay.Api.Controllers
@@ -18,6 +19,12 @@ namespace EasyWay.Api.Controllers
         [HttpGet]
         public ActionResult<List<Order>> Get() =>
             _orderRepository.Get();
+
+
+        [HttpGet]
+        [Route("Route")]
+        public void CalculateRoute() =>
+            new RouteService(_orderRepository).Matrix();
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
         public ActionResult<Order> Get(string id)

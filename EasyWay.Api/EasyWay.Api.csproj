@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\RouteController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.7" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -13,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EasyWay.Core\EasyWay.Core.csproj" />
     <ProjectReference Include="..\EasyWay.Data\EasyWay.Data.csproj" />
+    <ProjectReference Include="..\EasyWay.Services\EasyWay.Services.csproj" />
   </ItemGroup>
 
 </Project>
