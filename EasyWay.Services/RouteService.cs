@@ -3,13 +3,16 @@ using EasyWay.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace EasyWay.Services
 {
+    
     public class RouteService
     {
+     
         public OrderRepository _OrderRepository;
         //public CustomerRepository _customerRepository;
 
@@ -19,7 +22,7 @@ namespace EasyWay.Services
             //_customerRepository = customerRepository;
         }
 
-        public void Matrix()
+        public async Task MatrixAsync()
         {//הזמנות שלא בוצעו
             var order = _OrderRepository.DoneOrNot();
             //רשימת הכתובות
@@ -35,7 +38,24 @@ namespace EasyWay.Services
             var url = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={addresses}&destinations={addresses}&key={apiKey}";
 
             //TODO: use httpClient to get the distance matrix
+             HttpClient client = new HttpClient();
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                // Above three lines can be replaced with new helper method below
+                // string responseBody = await client.GetStringAsync(uri);
+
+                Console.WriteLine(responseBody);
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+            }
 
         }
+  
     }
 }

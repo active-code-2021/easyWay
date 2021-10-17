@@ -71,7 +71,7 @@ namespace EasyWay.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors();
+            app.UseCors("AllowAnyOrigin");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -24,7 +24,7 @@ namespace EasyWay.Api.Controllers
         [HttpGet]
         [Route("Route")]
         public void CalculateRoute() =>
-            new RouteService(_orderRepository).Matrix();
+            new RouteService(_orderRepository).MatrixAsync();
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
         public ActionResult<Order> Get(string id)
