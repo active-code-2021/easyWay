@@ -42,7 +42,10 @@ namespace EasyWay.Api
             services.AddSingleton<DeliveryManRepository>();
             services.AddSingleton<OrderRepository>();
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new Converter());
+            }); ;
 
             services.AddSwaggerGen(c =>
             {
@@ -67,6 +70,8 @@ namespace EasyWay.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EasyWay.Api v1"));
             }
+
+            
 
             app.UseHttpsRedirection();
 
