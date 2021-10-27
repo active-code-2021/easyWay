@@ -17,31 +17,42 @@ namespace EasyWay.Core.Entities
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        //[BsonElement("customerId")]
-        //public string CustomerId { get; set; }
-        //[BsonElement("deliveryManId")]
-        //public string DeliveryManId { get; set; }
+        [JsonProperty("deliverymanId")]
+        [BsonElement("deliverymanId")]
+        public string DeliverymanId { get; set; }
         [JsonProperty("doneOrNot")]
         [BsonElement("doneOrNot")]
-        public bool DoneOrNot { get; set; } = false;
-        [JsonProperty("address")]
-        [BsonElement("address")]
-        public GeoJsonPoint<GeoJson2DGeographicCoordinates> Address { get; set; }
-        [JsonProperty("firstname")]
-        [BsonElement("firstname")]
-        public string Firstname { get; set; }
-        [JsonProperty("lastname")]
-        [BsonElement("lastname")]
-        public string Lastname { get; set; }
+        public bool DoneOrNot { get; set; } = true;
+        [JsonProperty("name")]
+        [BsonElement("name")]
+        public string Name { get; set; }
         [JsonProperty("email")]
         [BsonElement("email")]
         public string Email { get; set; }
         [JsonProperty("phone")]
         [BsonElement("phone")]
         public string Phone { get; set; }
+        [JsonProperty("addressLat")]
+        [BsonElement("addressLat")]
+        public double addressLat { get; set; }
+        [JsonProperty("addressLon")]
+        [BsonElement("addressLon")]
+        public double addressLon { get; set; }
 
+
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        [BsonElement("address")]
+        public GeoJsonPoint<GeoJson2DGeographicCoordinates> Address { get; private set; }
+
+
+        public void SetAddress(double lon, double lat)
+        {
+            Address = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+                  new GeoJson2DGeographicCoordinates(lon, lat));
+        }
 
     }
 
- 
+
 }

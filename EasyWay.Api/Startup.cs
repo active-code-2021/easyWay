@@ -44,7 +44,7 @@ namespace EasyWay.Api
 
             services.AddControllers().AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new Converter());
+                //options.JsonSerializerOptions.Converters.Add(new Converter());
             }); ;
 
             services.AddSwaggerGen(c =>

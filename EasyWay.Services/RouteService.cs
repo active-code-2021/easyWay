@@ -1,5 +1,6 @@
 ﻿using EasyWay.Core.Entities;
 using EasyWay.Data;
+using MongoDB.Bson.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,40 +23,29 @@ namespace EasyWay.Services
             //_customerRepository = customerRepository;
         }
 
-        public async Task MatrixAsync()
+       // public async Task MatrixAsync()
+       public async Task MatrixAsync()
         {//הזמנות שלא בוצעו
-            var order = _OrderRepository.DoneOrNot();
-            //רשימת הכתובות
-            var addresses =string.Join('|', order.Select(o => $"{o.Address}"));
-            //var customer = _customerRepository.Get();
-            ////להביא את כל הכתובות של הלקוחות שהחבילה שלהם עדין לא נמסרה
+            var orders = _OrderRepository.DoneOrNot();
+            var distanceMatrix = await CreateDistanceMatrix(orders);
+        }
 
-            //var addresses = customer.Join(order, c => c.Id, o => o.CustomerId, (c, o) => c.Lat_lng);
+        private static async Task<DistanceMatrix> CreateDistanceMatrix(List<Order> orders)
+        {
+            //  רשימת הכתובות
+            var addresses = string.Join('|', orders.Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
 
-            //var places = string.Join('|', addresses.Select(address => $"{address.Lat},{address.Lng}"));
-
+            //TODO: move to app settings
             var apiKey = "AIzaSyBFVQTB-gOzy3rhID9yuz8ejN_QL70qCqQ";
             var url = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={addresses}&destinations={addresses}&key={apiKey}";
 
-            //TODO: use httpClient to get the distance matrix
-             HttpClient client = new HttpClient();
-            try
+            using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri);
-
-                Console.WriteLine(responseBody);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<DistanceMatrix>(responseBody);
             }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-            }
-
         }
-  
     }
 }

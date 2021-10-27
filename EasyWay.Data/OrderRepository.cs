@@ -22,7 +22,7 @@ namespace EasyWay.Data
             _orders.Find(order => true).ToList();
         public List<Order> DoneOrNot()
         {
-            var order = _orders.Find(o => !o.DoneOrNot);
+            var order = _orders.Find(o =>o.DoneOrNot);
             return order.ToList();
         }
         public Order Get(string id) =>

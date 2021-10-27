@@ -42,8 +42,8 @@ namespace EasyWay.Api.Controllers
         [HttpPost]
         public ActionResult<Order> Create(Order order)
         {
+            order.SetAddress(order.addressLon, order.addressLat);
             _orderRepository.Create(order);
-
             return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
         }
 
