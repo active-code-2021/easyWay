@@ -69,5 +69,7 @@ namespace EasyWay.Api.Controllers
 
             return NoContent();
         }
+
+        
     }
 }

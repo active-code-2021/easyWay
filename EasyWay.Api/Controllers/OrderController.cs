@@ -1,10 +1,12 @@
 ﻿using EasyWay.Core.Entities;
 using EasyWay.Data;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 namespace EasyWay.Api.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("AllowAnyOrigin")]
     [ApiController]
     public class OrderController : ControllerBase
     {
@@ -68,6 +70,12 @@ namespace EasyWay.Api.Controllers
             _orderRepository.Remove(order.Id);
 
             return NoContent();
+        }
+
+        [HttpGet("deliveryMan/{id:length(24)}", Name = "GetOrderByDeliveryMan")]
+        public ActionResult<List<Order>> GetByDeliverId(string id)
+        {
+            return _orderRepository.GetByDeliveryManId(id);
         }
     }
 }

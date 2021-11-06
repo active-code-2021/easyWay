@@ -24,6 +24,9 @@ namespace EasyWay.Data
         public Order Get(string id) =>
             _orders.Find<Order>(order => order.Id == id).FirstOrDefault();
 
+        public List<Order> GetByDeliveryManId(string id) =>
+            _orders.Find<Order>(order => order.DeliverymanId == id).ToList();
+        
         public Order Create(Order order)
         {
             _orders.InsertOne(order);
