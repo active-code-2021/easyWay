@@ -1,8 +1,11 @@
-﻿using EasyWay.Core.Entities;
+﻿using EasyWay.Core;
+using EasyWay.Core.Entities;
 using EasyWay.Data;
 using EasyWay.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace EasyWay.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -10,10 +13,12 @@ namespace EasyWay.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderRepository _orderRepository;
+        private IDistanceMatrixSettings _settings;
 
-        public OrderController(OrderRepository orderRepository)
+        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings)
         {
             _orderRepository = orderRepository;
+            _settings = settings;
         }
 
         [HttpGet]
@@ -23,8 +28,10 @@ namespace EasyWay.Api.Controllers
 
         [HttpGet]
         [Route("Route")]
-        public void CalculateRoute() =>
-            new RouteService(_orderRepository).MatrixAsync();
+        public async Task<List<string>> CalculateRouteAsync()
+        {
+            return await new RouteService(_orderRepository, _settings).CalculateRoutes();
+        }
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
         public ActionResult<Order> Get(string id)

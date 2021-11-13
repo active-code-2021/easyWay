@@ -37,6 +37,12 @@ namespace EasyWay.Api
             services.AddSingleton<IDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
+            
+            services.Configure<DistanceMatrixSetting>(
+             Configuration.GetSection(nameof(DistanceMatrixSetting)));
+            services.AddSingleton<IDistanceMatrixSettings>(sp =>
+                sp.GetRequiredService<IOptions<DistanceMatrixSetting>>().Value);
+
 
             services.AddSingleton<CustomerRepository>();
             services.AddSingleton<DeliveryManRepository>();

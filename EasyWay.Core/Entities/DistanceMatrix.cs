@@ -18,7 +18,7 @@ namespace EasyWay.Core.Entities
     public class Result
     {
         public string text { get; set; }
-        public int value { get; set; }
+        public long value { get; set; }
     }
     public class Element
     {
