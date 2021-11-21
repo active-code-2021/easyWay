@@ -5,6 +5,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -39,7 +40,7 @@ namespace EasyWay.Core.Entities
         [BsonElement("addressLon")]
         public double addressLon { get; set; }
 
-
+        public DeliveryMan deliveryMan;
 
         [System.Text.Json.Serialization.JsonIgnore]
         [BsonElement("address")]
@@ -50,6 +51,11 @@ namespace EasyWay.Core.Entities
         {
             Address = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
                   new GeoJson2DGeographicCoordinates(lon, lat));
+        }
+        public void SetDeliverymanId(string id)
+        {
+          
+            this.DeliverymanId = id;
         }
 
     }

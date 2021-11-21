@@ -14,11 +14,13 @@ namespace EasyWay.Api.Controllers
     {
         private readonly OrderRepository _orderRepository;
         private IDistanceMatrixSettings _settings;
-
-        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings)
+        //
+       private DeliveryManRepository _deliveryManRepository;
+        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings,DeliveryManRepository deliveryManRepository)
         {
             _orderRepository = orderRepository;
             _settings = settings;
+            _deliveryManRepository = deliveryManRepository;
         }
 
         [HttpGet]
@@ -50,6 +52,9 @@ namespace EasyWay.Api.Controllers
         public ActionResult<Order> Create(Order order)
         {
             order.SetAddress(order.addressLon, order.addressLat);
+            // order.SetDeliverymanId()
+           // order.SetDeliverymanId();
+            order.SetDeliverymanId(_deliveryManRepository.GetId());
             _orderRepository.Create(order);
             return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
         }

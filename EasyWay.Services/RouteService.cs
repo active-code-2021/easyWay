@@ -31,48 +31,57 @@ namespace EasyWay.Services
        public async Task<List<string>> CalculateRoutes()
         {//הזמנות שלא בוצעו
             var orders = _OrderRepository.DoneOrNot();
-
+            List<string> readyRoutelst = null;
             // TODO add warehouse to orders [0] before  calcaulating the distance matrix;
             var warehuose = _OrderRepository.getWarehouse();
+            //List < DistanceMatrix > _distanceMatrixlst = null;
             orders.Insert(0, warehuose);
+            int count = (orders.Count / 10)+1;
 
-            var distanceMatrix = await CreateDistanceMatrix(orders);
+            //for (int i = 0; i <= count; i++)
+            //{
+                var distanceMatrix = await CreateDistanceMatrix(orders);
+               // _distanceMatrixlst.Add(distanceMatrix);
 
-            // Create Routing Index Manager
-            RoutingIndexManager manager =
-                new RoutingIndexManager(distanceMatrix.origin_addresses.Count,3,0); // TODO: don't force to return to warehouse
+                //max value element
+                // Create Routing Index Manager
+                RoutingIndexManager manager =
+                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, 3, 0); // TODO: don't force to return to warehouse
 
-            // Create Routing Model.
-            RoutingModel routing = new RoutingModel(manager);
+                // Create Routing Model.
+                RoutingModel routing = new RoutingModel(manager);
 
-            // Create and register a transit callback.
-            int transitCallbackIndex = routing.RegisterTransitCallback((long fromIndex, long toIndex) => {
-                // Convert from routing variable Index to distance matrix NodeIndex.
-                var fromNode = manager.IndexToNode(fromIndex);
-                var toNode = manager.IndexToNode(toIndex);
-                return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
-            });
+                // Create and register a transit callback.
+                int transitCallbackIndex = routing.RegisterTransitCallback((long fromIndex, long toIndex) =>
+                {
+                    // Convert from routing variable Index to distance matrix NodeIndex.
+                    var fromNode = manager.IndexToNode(fromIndex);
+                    var toNode = manager.IndexToNode(toIndex);
+                    return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
+                });
 
-            // Define cost of each arc.
-            routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
-             
-            var maxValueDistance = distanceMatrix.rows.Max(r => r.elements.Sum(e => e.distance.value));
+                // Define cost of each arc.
+                routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
 
-            // Add Distance constraint.
-            routing.AddDimension(transitCallbackIndex,0, maxValueDistance/4, // TODO: calc max distance 
-                                 true, // start cumul to zero
-                                 "Distance");
-            RoutingDimension distanceDimension = routing.GetMutableDimension("Distance");
-            //distanceDimension.SetGlobalSpanCostCoefficient(100000);
+                var maxValueDistance = distanceMatrix.rows.Max(r => r.elements.Sum(e => e.distance.value));
 
-            // Setting first solution heuristic.
-            RoutingSearchParameters searchParameters =
-                operations_research_constraint_solver.DefaultRoutingSearchParameters();
-            searchParameters.FirstSolutionStrategy = FirstSolutionStrategy.Types.Value.PathCheapestArc;
+                // Add Distance constraint.
+                routing.AddDimension(transitCallbackIndex, 0, maxValueDistance / 4, // TODO: calc max distance 
+                                     true, // start cumul to zero
+                                     "Distance");
+                RoutingDimension distanceDimension = routing.GetMutableDimension("Distance");
+                //distanceDimension.SetGlobalSpanCostCoefficient(100000);
 
-            // Solve the problem.
-            Assignment solution = routing.SolveWithParameters(searchParameters);
-            return PrintSolution(distanceMatrix, routing, manager, solution);
+                // Setting first solution heuristic.
+                RoutingSearchParameters searchParameters =
+                    operations_research_constraint_solver.DefaultRoutingSearchParameters();
+                searchParameters.FirstSolutionStrategy = FirstSolutionStrategy.Types.Value.PathCheapestArc;
+
+                // Solve the problem.
+                Assignment solution = routing.SolveWithParameters(searchParameters);
+                return PrintSolution(distanceMatrix, routing, manager, solution);
+           // }
+            //return readyRoutelst;
         }
 
         private async Task<DistanceMatrix> CreateDistanceMatrix(List<Order> orders)

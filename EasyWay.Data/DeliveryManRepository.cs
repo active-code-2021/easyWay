@@ -1,5 +1,6 @@
 ﻿using EasyWay.Core;
 using EasyWay.Core.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,16 @@ namespace EasyWay.Data
 
         public List<DeliveryMan> Get() =>
             _deliveryMans.Find(deliveryMan => true).ToList();
+
+        public string GetId()
+        {
+            //var deliveryMan = _deliveryMans.Find("id").FirstOrDefault();
+            var deliveryMan = _deliveryMans.Find(new BsonDocument()).Project(new BsonDocument { { "id", 1 } }).FirstOrDefault();
+     
+
+             return deliveryMan.GetValue("_id").ToString()
+                ;
+        }
 
         public DeliveryMan Get(string id) =>
             _deliveryMans.Find<DeliveryMan>(deliveryMan => deliveryMan.Id == id).FirstOrDefault();
