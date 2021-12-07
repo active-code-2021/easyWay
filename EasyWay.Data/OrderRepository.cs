@@ -41,7 +41,6 @@ namespace EasyWay.Data
 
         public void Update(string id, Order orderIn) =>
             _orders.ReplaceOne(order => order.Id == id, orderIn);
-
         public void Remove(Order orderIn) =>
             _orders.DeleteOne(order => order.Id == orderIn.Id);
 

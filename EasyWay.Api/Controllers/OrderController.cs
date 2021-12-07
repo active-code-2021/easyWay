@@ -32,7 +32,7 @@ namespace EasyWay.Api.Controllers
         [Route("Route")]
         public async Task<List<string>> CalculateRouteAsync()
         {
-            return await new RouteService(_orderRepository, _settings).CalculateRoutes();
+            return await new RouteService(_orderRepository, _settings, _deliveryManRepository).CalculateRoutes();
         }
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
@@ -52,9 +52,6 @@ namespace EasyWay.Api.Controllers
         public ActionResult<Order> Create(Order order)
         {
             order.SetAddress(order.addressLon, order.addressLat);
-            // order.SetDeliverymanId()
-           // order.SetDeliverymanId();
-            order.SetDeliverymanId(_deliveryManRepository.GetId());
             _orderRepository.Create(order);
             return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
         }

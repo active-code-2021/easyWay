@@ -2,6 +2,7 @@
 using EasyWay.Core.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,7 @@ namespace EasyWay.Data
     public class DeliveryManRepository
     {
         private readonly IMongoCollection<DeliveryMan> _deliveryMans;
+       // static int cnt=0;
 
         public DeliveryManRepository(IDatabaseSettings settings)
         {
@@ -24,12 +26,18 @@ namespace EasyWay.Data
 
         public string GetId()
         {
-            //var deliveryMan = _deliveryMans.Find("id").FirstOrDefault();
-            var deliveryMan = _deliveryMans.Find(new BsonDocument()).Project(new BsonDocument { { "id", 1 } }).FirstOrDefault();
-     
+            //get the deliveryManId from db
+            
+          var rnd = new Random();
+          int cnt = rnd.Next(0,2);
+           //if(cnt>=3)
+           // {
+           //     return "";
+           // }
+            var deliveryMan = _deliveryMans.Find(new BsonDocument()).Project(new BsonDocument { { "id", 1 } }).Skip(cnt).FirstOrDefault();
+           
 
-             return deliveryMan.GetValue("_id").ToString()
-                ;
+             return deliveryMan.GetValue("_id").ToString();
         }
 
         public DeliveryMan Get(string id) =>

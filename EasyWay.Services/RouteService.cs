@@ -18,13 +18,14 @@ namespace EasyWay.Services
      
         private OrderRepository _OrderRepository;
         private IDistanceMatrixSettings _settings;
+        private DeliveryManRepository _deliveryManRepository;
         //public CustomerRepository _customerRepository;
 
-        public RouteService(OrderRepository orderRepository, IDistanceMatrixSettings settings)
+        public RouteService(OrderRepository orderRepository, IDistanceMatrixSettings settings, DeliveryManRepository deliveryManRepository)
         {
             _OrderRepository = orderRepository;
             _settings = settings;
-            //_customerRepository = customerRepository;
+            _deliveryManRepository = deliveryManRepository;
         }
 
        // public async Task MatrixAsync()
@@ -79,7 +80,7 @@ namespace EasyWay.Services
 
                 // Solve the problem.
                 Assignment solution = routing.SolveWithParameters(searchParameters);
-                return PrintSolution(distanceMatrix, routing, manager, solution);
+                return PrintSolution(distanceMatrix, routing, manager, solution,orders);
            // }
             //return readyRoutelst;
         }
@@ -102,7 +103,7 @@ namespace EasyWay.Services
             }
         }
         public List<string> PrintSolution(in DistanceMatrix data, in RoutingModel routing, in RoutingIndexManager manager,
-                            in Assignment solution)
+                            in Assignment solution,List<Order>orders)
         {
             var sb = new StringBuilder($"Objective {solution.ObjectiveValue()}:");
             
@@ -111,8 +112,8 @@ namespace EasyWay.Services
             List<string> route = new List<string>();
             for (int i = 0; i <3; ++i)
             {
-               // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
-
+                // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
+                var id = _deliveryManRepository.GetId();
                 long routeDistance = 0;
                 var index = routing.Start(i);
                 while (routing.IsEnd(index) == false)
@@ -122,7 +123,10 @@ namespace EasyWay.Services
                     index = solution.Value(routing.NextVar(index));
                     routeDistance += routing.GetArcCostForVehicle(previousIndex, index, 0);
                     var node = manager.IndexToNode((int)index);
-                     route.Add(data.origin_addresses[node]);
+                    route.Add(data.origin_addresses[node]);
+                    orders[node].SetDeliverymanId(id);
+                   
+                    _OrderRepository.Update(orders[node].Id, orders[node]);
                 }
                 sb.AppendLine($"{manager.IndexToNode((int)index)}");
                 sb.AppendLine($"Distance of the route: {routeDistance}m");
