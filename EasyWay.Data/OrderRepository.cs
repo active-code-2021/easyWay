@@ -20,7 +20,16 @@ namespace EasyWay.Data
 
         public List<Order> Get() =>
             _orders.Find(order => true).ToList();
-
+        public List<Order> DoneOrNot()
+        {
+            var order = _orders.Find(o =>o.DoneOrNot);
+            return order.ToList();
+        }
+        public Order getWarehouse()
+        {
+            Order warehuose = _orders.Find(o => o.Id.Equals("618ff7408410323f85ee7f64")).FirstOrDefault();
+            return warehuose;
+        }
         public Order Get(string id) =>
             _orders.Find<Order>(order => order.Id == id).FirstOrDefault();
 
@@ -32,7 +41,6 @@ namespace EasyWay.Data
 
         public void Update(string id, Order orderIn) =>
             _orders.ReplaceOne(order => order.Id == id, orderIn);
-
         public void Remove(Order orderIn) =>
             _orders.DeleteOne(order => order.Id == orderIn.Id);
 

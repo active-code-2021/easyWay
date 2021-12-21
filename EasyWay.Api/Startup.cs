@@ -37,11 +37,26 @@ namespace EasyWay.Api
             services.AddSingleton<IDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
+            
+            services.Configure<DistanceMatrixSetting>(
+             Configuration.GetSection(nameof(DistanceMatrixSetting)));
+            services.AddSingleton<IDistanceMatrixSettings>(sp =>
+                sp.GetRequiredService<IOptions<DistanceMatrixSetting>>().Value);
+
 
             services.AddSingleton<CustomerRepository>();
             services.AddSingleton<DeliveryManRepository>();
             services.AddSingleton<OrderRepository>();
 
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                //options.JsonSerializerOptions.Converters.Add(new Converter());
+            }); ;
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+            });
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAnyOrigin",
@@ -72,7 +87,7 @@ namespace EasyWay.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors();
+            app.UseCors("AllowAnyOrigin");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
