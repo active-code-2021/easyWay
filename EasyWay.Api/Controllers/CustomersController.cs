@@ -1,12 +1,15 @@
 ﻿using EasyWay.Core.Entities;
 using EasyWay.Data;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace CustomersApi.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("AllowAnyOrigin")]
     [ApiController]
+
     public class CustomersController : ControllerBase
     {
         private readonly CustomerRepository _customerRepository;
@@ -40,6 +43,7 @@ namespace CustomersApi.Controllers
 
             return CreatedAtRoute("GetCustomer", new { id = customer.Id.ToString() }, customer);
         }
+     
 
         [HttpPut("{id:length(24)}")]
         public IActionResult Update(string id, Customer customerIn)

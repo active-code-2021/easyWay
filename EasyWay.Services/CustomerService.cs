@@ -4,5 +4,6 @@ namespace EasyWay.Services
 {
     public class CustomerService
     {
+
     }
 }
