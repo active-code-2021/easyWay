@@ -39,15 +39,14 @@ namespace EasyWay.Services
             orders.Insert(0, warehuose);
             int count = (orders.Count / 10)+1;
 
-            //for (int i = 0; i <= count; i++)
-            //{
                 var distanceMatrix = await CreateDistanceMatrix(orders);
-               // _distanceMatrixlst.Add(distanceMatrix);
+
+            var deliveyman = _deliveryManRepository.Get().Count();
 
                 //max value element
                 // Create Routing Index Manager
-                RoutingIndexManager manager =
-                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, 3, 0); // TODO: don't force to return to warehouse
+            RoutingIndexManager manager =
+                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, deliveyman, 0); // TODO: don't force to return to warehouse
 
                 // Create Routing Model.
                 RoutingModel routing = new RoutingModel(manager);
@@ -80,40 +79,65 @@ namespace EasyWay.Services
 
                 // Solve the problem.
                 Assignment solution = routing.SolveWithParameters(searchParameters);
-                return PrintSolution(distanceMatrix, routing, manager, solution,orders);
-           // }
-            //return readyRoutelst;
+                return PrintSolution(distanceMatrix, routing, manager, solution,orders, deliveyman);
+         
+            
         }
 
         private async Task<DistanceMatrix> CreateDistanceMatrix(List<Order> orders)
         {
-            //  רשימת הכתובות
-            var addresses = string.Join('|', orders.Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
-
-            //TODO: move to app settings
-            var apiKey = "AIzaSyBFVQTB-gOzy3rhID9yuz8ejN_QL70qCqQ"; 
-            var url = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={addresses}&destinations={addresses}&key={apiKey}";
-          
-            using (HttpClient client = new HttpClient())
+            try
             {
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<DistanceMatrix>(responseBody);
+                DistanceMatrix mat = new DistanceMatrix();
+                int numOfAddresesPerLoop = 10;
+                int numOfLoops = (int)Math.Ceiling(((double)orders.Count / (double)numOfAddresesPerLoop));
+                for (int i = 0; i < numOfLoops; i++)
+                {
+
+                    //  רשימת הכתובות
+                    var addresses = string.Join('|', orders.Skip(i*numOfAddresesPerLoop).Take(numOfAddresesPerLoop).Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
+
+                    //TODO: move to app settings
+                    var apiKey = "AIzaSyBFVQTB-gOzy3rhID9yuz8ejN_QL70qCqQ";
+                    var url = $"https://maps.googleapis.com/maps/api/distancematrix/json?origins={addresses}&destinations={addresses}&key={apiKey}";
+
+                    using (HttpClient client = new HttpClient())
+                    {
+                        HttpResponseMessage response = await client.GetAsync(url);
+                        response.EnsureSuccessStatusCode();
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        DistanceMatrix temp = Newtonsoft.Json.JsonConvert.DeserializeObject<DistanceMatrix>(responseBody);
+                        if (mat.origin_addresses == null)
+                        {
+                            mat = temp;
+                        }
+                        else
+                        {
+                            mat.origin_addresses = mat.origin_addresses.Concat(temp.origin_addresses).ToList();
+                            mat.destination_addresses = mat.destination_addresses.Concat(temp.destination_addresses).ToList();
+                            mat.rows = mat.rows.Concat(temp.rows).ToList();
+                        }
+                    }
+                }
+                return mat;
+            }
+            catch(Exception e)
+            {
+                return null;
             }
         }
         public List<string> PrintSolution(in DistanceMatrix data, in RoutingModel routing, in RoutingIndexManager manager,
-                            in Assignment solution,List<Order>orders)
+                            in Assignment solution,List<Order>orders,int deliveyman)
         {
             var sb = new StringBuilder($"Objective {solution.ObjectiveValue()}:");
             
             // Inspect solution.
              long maxRouteDistance = 0;
             List<string> route = new List<string>();
-            for (int i = 0; i <3; ++i)
+            for (int i = 0; i < deliveyman; ++i)
             {
                 // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
-                var id = _deliveryManRepository.GetId();
+                var id = _deliveryManRepository.GetId(deliveyman);
                 long routeDistance = 0;
                 var index = routing.Start(i);
                 while (routing.IsEnd(index) == false)

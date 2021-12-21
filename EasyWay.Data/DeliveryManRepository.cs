@@ -24,16 +24,23 @@ namespace EasyWay.Data
         public List<DeliveryMan> Get() =>
             _deliveryMans.Find(deliveryMan => true).ToList();
 
-        public string GetId()
+        static int[] arr = new int[3];
+        public string GetId(int deliveyman)
         {
             //get the deliveryManId from db
-            
+           //רות ריבר עשתה רקקקקקקקקקק את זה
           var rnd = new Random();
-          int cnt = rnd.Next(0,2);
-           //if(cnt>=3)
-           // {
-           //     return "";
-           // }
+          int cnt = rnd.Next(0, deliveyman);
+            while (arr[cnt] != 0)
+            {
+                cnt = rnd.Next(0, deliveyman);
+            }
+            arr[cnt]++;
+
+            //if(cnt>=3)
+            // {
+            //     return "";
+            // }
             var deliveryMan = _deliveryMans.Find(new BsonDocument()).Project(new BsonDocument { { "id", 1 } }).Skip(cnt).FirstOrDefault();
            
 
