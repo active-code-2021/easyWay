@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EasyWay.Services": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

@@ -1,8 +1,12 @@
-﻿using EasyWay.Core.Entities;
+﻿using EasyWay.Core;
+using EasyWay.Core.Entities;
 using EasyWay.Data;
-using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;//current
+using EasyWay.Services;//incoming
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace EasyWay.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -11,15 +15,27 @@ namespace EasyWay.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderRepository _orderRepository;
-
-        public OrderController(OrderRepository orderRepository)
+        private IDistanceMatrixSettings _settings;
+        //
+       private DeliveryManRepository _deliveryManRepository;
+        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings,DeliveryManRepository deliveryManRepository)
         {
             _orderRepository = orderRepository;
+            _settings = settings;
+            _deliveryManRepository = deliveryManRepository;
         }
 
         [HttpGet]
         public ActionResult<List<Order>> Get() =>
             _orderRepository.Get();
+
+
+        [HttpGet]
+        [Route("Route")]
+        public async Task<List<string>> CalculateRouteAsync()
+        {
+            return await new RouteService(_orderRepository, _settings, _deliveryManRepository).CalculateRoutes();
+        }
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
         public ActionResult<Order> Get(string id)
@@ -37,8 +53,8 @@ namespace EasyWay.Api.Controllers
         [HttpPost]
         public ActionResult<Order> Create(Order order)
         {
+            order.SetAddress(order.addressLon, order.addressLat);
             _orderRepository.Create(order);
-
             return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
         }
 
