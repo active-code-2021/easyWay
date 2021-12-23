@@ -67,10 +67,10 @@ namespace EasyWay.Api
             });
             services.AddControllers();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
-            });
+            //services.AddSwaggerGen(c =>
+            //{
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+            //});
             
         }
 
