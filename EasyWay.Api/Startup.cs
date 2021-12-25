@@ -55,7 +55,7 @@ namespace EasyWay.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
             });
             services.AddCors(options =>
             {
