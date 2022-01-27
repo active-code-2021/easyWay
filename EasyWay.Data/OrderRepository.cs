@@ -22,12 +22,12 @@ namespace EasyWay.Data
             _orders.Find(order => true).ToList();
         public List<Order> DoneOrNot()
         {
-            var order = _orders.Find(o =>o.DoneOrNot);
+            var order = _orders.Find(o =>!o.DoneOrNot);
             return order.ToList();
         }
         public Order getWarehouse()
         {
-            Order warehuose = _orders.Find(o => o.Id.Equals("618ff7408410323f85ee7f64")).FirstOrDefault();
+            Order warehuose = _orders.Find(o => o.Id.Equals("61e84b7bad23421e2c4ba6d9")).FirstOrDefault();
             return warehuose;
         }
         public Order Get(string id) =>

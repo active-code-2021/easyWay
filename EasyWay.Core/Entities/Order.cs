@@ -23,7 +23,7 @@ namespace EasyWay.Core.Entities
         public string DeliverymanId { get; set; }
         [JsonProperty("doneOrNot")]
         [BsonElement("doneOrNot")]
-        public bool DoneOrNot { get; set; } = true;
+        public bool DoneOrNot { get; set; }
         [JsonProperty("name")]
         [BsonElement("name")]
         public string Name { get; set; }
