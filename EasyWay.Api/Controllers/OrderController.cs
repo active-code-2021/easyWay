@@ -29,13 +29,17 @@ namespace EasyWay.Api.Controllers
         public ActionResult<List<Order>> Get() =>
             _orderRepository.Get();
 
-
+        [HttpGet]
+        [Route("DoneOrders")]
+        public ActionResult<int> DoneOrders() =>
+            _orderRepository.DoneOrNot().Count;
+      
         [HttpGet]
         [Route("Route")]
-        public async Task<List<string>> CalculateRouteAsync()
-        {
-            return await new RouteService(_orderRepository, _settings, _deliveryManRepository).CalculateRoutes();
-        }
+        public async Task<List<string>> CalculateRouteAsync()=>
+       
+            await new RouteService(_orderRepository, _settings, _deliveryManRepository).CalculateRoutes();
+        
 
         [HttpGet("{id:length(24)}", Name = "GetOrder")]
         public ActionResult<Order> Get(string id)

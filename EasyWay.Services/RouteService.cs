@@ -28,8 +28,8 @@ namespace EasyWay.Services
             _deliveryManRepository = deliveryManRepository;
         }
 
-       // public async Task MatrixAsync()
-       public async Task<List<string>> CalculateRoutes()
+        // public async Task MatrixAsync()
+        public async Task<List<string>> CalculateRoutes()
         {//הזמנות שלא בוצעו
             var orders = _OrderRepository.DoneOrNot();
             List<string> readyRoutelst = null;
@@ -37,51 +37,51 @@ namespace EasyWay.Services
             var warehuose = _OrderRepository.getWarehouse();
             //List < DistanceMatrix > _distanceMatrixlst = null;
             orders.Insert(0, warehuose);
-            int count = (orders.Count / 10)+1;
+            int count = (orders.Count / 10) + 1;
 
-                var distanceMatrix = await CreateDistanceMatrix(orders);
+            var distanceMatrix = await CreateDistanceMatrix(orders);
 
-            var deliveyman = _deliveryManRepository.Get().Count();
+            var deliveyman = _deliveryManRepository.Get();
 
-                //max value element
-                // Create Routing Index Manager
+            //max value element
+            // Create Routing Index Manager
             RoutingIndexManager manager =
-                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, deliveyman, 0); // TODO: don't force to return to warehouse
+                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, deliveyman.Count(), 0); // TODO: don't force to return to warehouse
 
-                // Create Routing Model.
-                RoutingModel routing = new RoutingModel(manager);
+            // Create Routing Model.
+            RoutingModel routing = new RoutingModel(manager);
 
-                // Create and register a transit callback.
-                int transitCallbackIndex = routing.RegisterTransitCallback((long fromIndex, long toIndex) =>
-                {
-                    // Convert from routing variable Index to distance matrix NodeIndex.
-                    var fromNode = manager.IndexToNode(fromIndex);
-                    var toNode = manager.IndexToNode(toIndex);
-                    return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
-                });
+            // Create and register a transit callback.
+            int transitCallbackIndex = routing.RegisterTransitCallback((long fromIndex, long toIndex) =>
+            {
+                     // Convert from routing variable Index to distance matrix NodeIndex.
+                     var fromNode = manager.IndexToNode(fromIndex);
+                var toNode = manager.IndexToNode(toIndex);
+                return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
+            });
 
-                // Define cost of each arc.
-                routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
+            // Define cost of each arc.
+            routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
 
-                var maxValueDistance = distanceMatrix.rows.Max(r => r.elements.Sum(e => e.distance.value));
+            var maxValueDistance = distanceMatrix.rows.Max(r => r.elements.Sum(e => e.distance.value));
 
-                // Add Distance constraint.
-                routing.AddDimension(transitCallbackIndex, 0, maxValueDistance / 4, // TODO: calc max distance 
-                                     true, // start cumul to zero
-                                     "Distance");
-                RoutingDimension distanceDimension = routing.GetMutableDimension("Distance");
-                //distanceDimension.SetGlobalSpanCostCoefficient(100000);
+            // Add Distance constraint.
+            routing.AddDimension(transitCallbackIndex, 0, maxValueDistance * 2, // TODO: calc max distance 
+                                 true, // start cumul to zero
+                                 "Distance");
+            RoutingDimension distanceDimension = routing.GetMutableDimension("Distance");
+            //distanceDimension.SetGlobalSpanCostCoefficient(100000);
 
-                // Setting first solution heuristic.
-                RoutingSearchParameters searchParameters =
-                    operations_research_constraint_solver.DefaultRoutingSearchParameters();
-                searchParameters.FirstSolutionStrategy = FirstSolutionStrategy.Types.Value.PathCheapestArc;
+            // Setting first solution heuristic.
+            RoutingSearchParameters searchParameters =
+                operations_research_constraint_solver.DefaultRoutingSearchParameters();
+            searchParameters.FirstSolutionStrategy = FirstSolutionStrategy.Types.Value.PathCheapestArc;
 
-                // Solve the problem.
-                Assignment solution = routing.SolveWithParameters(searchParameters);
-                return PrintSolution(distanceMatrix, routing, manager, solution,orders, deliveyman);
-         
-            
+            // Solve the problem.
+            Assignment solution = routing.SolveWithParameters(searchParameters);
+            return PrintSolution(distanceMatrix, routing, manager, solution, orders, deliveyman);
+
+
         }
 
         private async Task<DistanceMatrix> CreateDistanceMatrix(List<Order> orders)
@@ -95,7 +95,7 @@ namespace EasyWay.Services
                 {
 
                     //  רשימת הכתובות
-                    var addresses = string.Join('|', orders.Skip(i*numOfAddresesPerLoop).Take(numOfAddresesPerLoop).Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
+                    var addresses = string.Join('|', orders.Skip(i * numOfAddresesPerLoop).Take(numOfAddresesPerLoop).Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
 
                     //TODO: move to app settings
                     var apiKey = "AIzaSyBFVQTB-gOzy3rhID9yuz8ejN_QL70qCqQ";
@@ -121,25 +121,27 @@ namespace EasyWay.Services
                 }
                 return mat;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return null;
             }
         }
+
         public List<string> PrintSolution(in DistanceMatrix data, in RoutingModel routing, in RoutingIndexManager manager,
-                            in Assignment solution,List<Order>orders,int deliveyman)
+                            in Assignment solution,List<Order>orders,List<DeliveryMan> deliveyman)
         {
             var sb = new StringBuilder($"Objective {solution.ObjectiveValue()}:");
             
             // Inspect solution.
              long maxRouteDistance = 0;
             List<string> route = new List<string>();
-            for (int i = 0; i < deliveyman; ++i)
+            for (int i = 0; i < deliveyman.Count; ++i)
             {
                 // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
-                var id = _deliveryManRepository.GetId(deliveyman);
+                var id = deliveyman[i].Id; // 
                 long routeDistance = 0;
                 var index = routing.Start(i);
+                int numOfOrder = 0;
                 while (routing.IsEnd(index) == false)
                 {
                     sb.AppendLine($"{ manager.IndexToNode((int)index)}");
@@ -149,18 +151,25 @@ namespace EasyWay.Services
                     var node = manager.IndexToNode((int)index);
                     route.Add(data.origin_addresses[node]);
                     orders[node].SetDeliverymanId(id);
-                   
+                    orders[node].SetDeliverymanNum(numOfOrder);
                     _OrderRepository.Update(orders[node].Id, orders[node]);
+                    numOfOrder++;
                 }
                 sb.AppendLine($"{manager.IndexToNode((int)index)}");
                 sb.AppendLine($"Distance of the route: {routeDistance}m");
                 maxRouteDistance = Math.Max(routeDistance, maxRouteDistance);
-                route.Add("0");
+                route.Add(deliveyman[i].Id);
             }
             sb.AppendLine($"Maximum distance of the routes: {maxRouteDistance}m");
 
             File.WriteAllText("log.txt", sb.ToString());
 
+            
+            
+            
+            
+            
+            
             return route;
 
         }
