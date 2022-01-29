@@ -40,6 +40,10 @@ namespace EasyWay.Core.Entities
         [BsonElement("addressLon")]
         public double addressLon { get; set; }
 
+        [JsonProperty("deliverymanNum")]
+        [BsonElement("deliverymanNum")]
+        public int DeliverymanNum { get; set; }
+
         public DeliveryMan deliveryMan;
 
         [System.Text.Json.Serialization.JsonIgnore]
@@ -56,6 +60,11 @@ namespace EasyWay.Core.Entities
         {
           
             this.DeliverymanId = id;
+        }
+        public void SetDeliverymanNum(int num)
+        {
+
+            this.DeliverymanNum = num;
         }
 
     }

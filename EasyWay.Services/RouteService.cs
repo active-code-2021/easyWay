@@ -141,6 +141,7 @@ namespace EasyWay.Services
                 var id = deliveyman[i].Id; // 
                 long routeDistance = 0;
                 var index = routing.Start(i);
+                int numOfOrder = 0;
                 while (routing.IsEnd(index) == false)
                 {
                     sb.AppendLine($"{ manager.IndexToNode((int)index)}");
@@ -150,13 +151,14 @@ namespace EasyWay.Services
                     var node = manager.IndexToNode((int)index);
                     route.Add(data.origin_addresses[node]);
                     orders[node].SetDeliverymanId(id);
-                   
+                    orders[node].SetDeliverymanNum(numOfOrder);
                     _OrderRepository.Update(orders[node].Id, orders[node]);
+                    numOfOrder++;
                 }
                 sb.AppendLine($"{manager.IndexToNode((int)index)}");
                 sb.AppendLine($"Distance of the route: {routeDistance}m");
                 maxRouteDistance = Math.Max(routeDistance, maxRouteDistance);
-                route.Add("0");
+                route.Add(deliveyman[i].Id);
             }
             sb.AppendLine($"Maximum distance of the routes: {maxRouteDistance}m");
 
