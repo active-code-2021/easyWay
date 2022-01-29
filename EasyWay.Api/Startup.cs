@@ -1,9 +1,11 @@
+using EasyWay.Api.Extentions;
 using EasyWay.Core;
 using EasyWay.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,7 +57,7 @@ namespace EasyWay.Api
 
             services.AddSwaggerGen(c =>
             {
-                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+               c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
             });
             services.AddCors(options =>
             {
@@ -66,12 +68,12 @@ namespace EasyWay.Api
                     .AllowAnyHeader());
             });
             services.AddControllers();
-
+            services.AddIdentityServices(Configuration);
             //services.AddSwaggerGen(c =>
             //{
-                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
+            //c.SwaggerDoc("v1", new OpenApiInfo { Title = "EasyWay.Api", Version = "v1" });
             //});
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,8 +90,9 @@ namespace EasyWay.Api
 
             app.UseRouting();
             app.UseCors("AllowAnyOrigin");
+          
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

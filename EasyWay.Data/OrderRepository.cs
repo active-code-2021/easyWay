@@ -1,5 +1,7 @@
-﻿using EasyWay.Core;
+﻿using DocuSign.eSign.Model;
+using EasyWay.Core;
 using EasyWay.Core.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +24,7 @@ namespace EasyWay.Data
             _orders.Find(order => true).ToList();
         public List<Order> DoneOrNot()
         {
-            var order = _orders.Find(o =>o.DoneOrNot);
+            var order = _orders.Find(o => o.DoneOrNot);
             return order.ToList();
         }
         public Order getWarehouse()
@@ -35,14 +37,16 @@ namespace EasyWay.Data
 
         public List<Order> GetByDeliveryManId(string id) =>
             _orders.Find<Order>(order => order.DeliverymanId == id).ToList();
-        
+
         public Order Create(Order order)
         {
+            
             _orders.InsertOne(order);
             return order;
         }
+       
 
-        public void Update(string id, Order orderIn) =>
+    public void Update(string id, Order orderIn) =>
             _orders.ReplaceOne(order => order.Id == id, orderIn);
         public void Remove(Order orderIn) =>
             _orders.DeleteOne(order => order.Id == orderIn.Id);

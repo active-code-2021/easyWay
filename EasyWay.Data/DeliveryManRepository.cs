@@ -50,12 +50,22 @@ namespace EasyWay.Data
         public DeliveryMan Get(string id) =>
             _deliveryMans.Find<DeliveryMan>(deliveryMan => deliveryMan.Id == id).FirstOrDefault();
 
+        public DeliveryMan GetByEmail(string email) =>
+            _deliveryMans.Find<DeliveryMan>(deliveryMan => deliveryMan.Email == email).FirstOrDefault();
+
         public DeliveryMan Create(DeliveryMan deliveryMan)
         {
             _deliveryMans.InsertOne(deliveryMan);
             return deliveryMan;
         }
+        public  bool DeliveryExists(string email)
+        {
+            var a = _deliveryMans.Find(d => d.Email == email).Count();
+           if (a >0)
+                    return true;
+            return false;
 
+        }
         public void Update(string id, DeliveryMan deliveryManIn) =>
             _deliveryMans.ReplaceOne(deliveryMan => deliveryMan.Id == id, deliveryManIn);
 

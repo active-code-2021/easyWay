@@ -17,8 +17,8 @@ namespace EasyWay.Api.Controllers
         private readonly OrderRepository _orderRepository;
         private IDistanceMatrixSettings _settings;
         //
-       private DeliveryManRepository _deliveryManRepository;
-        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings,DeliveryManRepository deliveryManRepository)
+        private DeliveryManRepository _deliveryManRepository;
+        public OrderController(OrderRepository orderRepository, IDistanceMatrixSettings settings, DeliveryManRepository deliveryManRepository)
         {
             _orderRepository = orderRepository;
             _settings = settings;
@@ -71,6 +71,22 @@ namespace EasyWay.Api.Controllers
             _orderRepository.Update(id, orderIn);
 
             return NoContent();
+        }
+        //[HttpPut("{id:length(24)}", Name = "UpdateOrderDone")]
+        [HttpPut("confirm-order/{id}")]
+        public ActionResult<Order> Update(string id)
+        {
+            var order = _orderRepository.Get(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+            order.DoneOrNot = true;
+            _orderRepository.Update(id,order);
+
+           
+            return _orderRepository.Get(id);
         }
 
         [HttpDelete("{id:length(24)}")]
