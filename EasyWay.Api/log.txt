@@ -1,7 +1,4 @@
-Objective 50239:0
-0
-Distance of the route: 0m
-0
+Objective 79969:0
 0
 Distance of the route: 0m
 0
@@ -9,7 +6,12 @@ Distance of the route: 0m
 Distance of the route: 0m
 0
 1
+7
+5
+4
+3
+6
 2
 0
-Distance of the route: 50239m
-Maximum distance of the routes: 50239m
+Distance of the route: 79969m
+Maximum distance of the routes: 79969m

@@ -33,7 +33,10 @@ namespace EasyWay.Api.Controllers
         [Route("DoneOrders")]
         public ActionResult<int> DoneOrders() =>
             _orderRepository.DoneOrNot().Count;
-      
+        [HttpGet]
+        [Route("HasDeliverymanId")]
+        public ActionResult<int> HasDeliverymanId() =>
+              _orderRepository.HasDeliverymanId().Count;
         [HttpGet]
         [Route("Route")]
         public async Task<List<string>> CalculateRouteAsync()=>
