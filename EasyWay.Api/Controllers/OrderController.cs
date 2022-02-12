@@ -6,6 +6,7 @@ using EasyWay.Services;//incoming
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace EasyWay.Api.Controllers
 {
@@ -38,6 +39,10 @@ namespace EasyWay.Api.Controllers
         public ActionResult<int> HasDeliverymanId() =>
               _orderRepository.HasDeliverymanId().Count;
         [HttpGet]
+        [Route("GroupRoute")]
+        public IEnumerable<IGrouping<string, Order>> GroupRoute() =>
+         _orderRepository.getRoute();
+        [HttpGet]
         [Route("Route")]
         public async Task<List<string>> CalculateRouteAsync()=>
        
@@ -60,7 +65,7 @@ namespace EasyWay.Api.Controllers
         [HttpPost]
         public ActionResult<Order> Create(Order order)
         {
-            order.SetAddress(order.addressLon, order.addressLat);
+            //order.SetAddress(order.addressLon, order.addressLat);
             _orderRepository.Create(order);
             return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
         }

@@ -15,7 +15,7 @@ namespace EasyWay.Services
 
     public class RouteService
     {
-     
+
         private OrderRepository _OrderRepository;
         private IDistanceMatrixSettings _settings;
         private DeliveryManRepository _deliveryManRepository;
@@ -54,8 +54,8 @@ namespace EasyWay.Services
             // Create and register a transit callback.
             int transitCallbackIndex = routing.RegisterTransitCallback((long fromIndex, long toIndex) =>
             {
-                     // Convert from routing variable Index to distance matrix NodeIndex.
-                     var fromNode = manager.IndexToNode(fromIndex);
+                // Convert from routing variable Index to distance matrix NodeIndex.
+                var fromNode = manager.IndexToNode(fromIndex);
                 var toNode = manager.IndexToNode(toIndex);
                 return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
             });
@@ -95,7 +95,7 @@ namespace EasyWay.Services
                 {
 
                     //  רשימת הכתובות
-                    var addresses = string.Join('|', orders.Skip(i * numOfAddresesPerLoop).Take(numOfAddresesPerLoop).Select(o => $"{o.Address.Coordinates.Latitude},{o.Address.Coordinates.Longitude}"));
+                    var addresses = string.Join('|', orders.Skip(i * numOfAddresesPerLoop).Take(numOfAddresesPerLoop).Select(o => $"{o.Lat},{o.Lng}"));
 
                     //TODO: move to app settings
                     var apiKey = "AIzaSyBFVQTB-gOzy3rhID9yuz8ejN_QL70qCqQ";
@@ -128,20 +128,28 @@ namespace EasyWay.Services
         }
 
         public List<string> PrintSolution(in DistanceMatrix data, in RoutingModel routing, in RoutingIndexManager manager,
-                            in Assignment solution,List<Order>orders,List<DeliveryMan> deliveyman)
+                            in Assignment solution, List<Order> orders, List<DeliveryMan> deliveyman)
         {
             var sb = new StringBuilder($"Objective {solution.ObjectiveValue()}:");
-            
+
             // Inspect solution.
-             long maxRouteDistance = 0;
+            long maxRouteDistance = 0;
             List<string> route = new List<string>();
             for (int i = 0; i < deliveyman.Count; ++i)
             {
+                var id = "";
+                var delivarymanName = "";
                 // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
-                var id = deliveyman[i].Id; // 
+                if (!deliveyman[i].Active)
+                {
+
+                    continue;
+                }
+                id = deliveyman[i].Id;
+                delivarymanName = deliveyman[i].FirstName;
                 long routeDistance = 0;
                 var index = routing.Start(i);
-                int position = 0;
+                int numOfOrder = 1;
                 while (routing.IsEnd(index) == false)
                 {
                     sb.AppendLine($"{ manager.IndexToNode((int)index)}");
@@ -151,25 +159,33 @@ namespace EasyWay.Services
                     var node = manager.IndexToNode((int)index);
                     route.Add(data.origin_addresses[node]);
                     orders[node].SetDeliverymanId(id);
-                    orders[node].SetDeliverymanNum(position);
+                   // orders[node].SetDeliverymanName(delivarymanName);
+                    if (orders[node].Id == "61e84b7bad23421e2c4ba6d9")
+                        orders[node].SetDeliverymanNum(0);
+                    else
+                        orders[node].SetDeliverymanNum(numOfOrder);
                     _OrderRepository.Update(orders[node].Id, orders[node]);
-                    position++;
+                    if (orders[node].Id != "61e84b7bad23421e2c4ba6d9")
+
+                        numOfOrder++;
+                    else
+                        numOfOrder = 1;
                 }
                 sb.AppendLine($"{manager.IndexToNode((int)index)}");
                 sb.AppendLine($"Distance of the route: {routeDistance}m");
                 maxRouteDistance = Math.Max(routeDistance, maxRouteDistance);
-                route.Add(deliveyman[i].Id);
+                route.Add(deliveyman[i].FirstName);
             }
             sb.AppendLine($"Maximum distance of the routes: {maxRouteDistance}m");
 
             File.WriteAllText("log.txt", sb.ToString());
 
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
             return route;
 
         }
