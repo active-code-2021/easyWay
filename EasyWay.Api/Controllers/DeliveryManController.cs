@@ -70,6 +70,15 @@ namespace EasyWay.Api.Controllers
             return CreatedAtRoute("GetDeliveryMan", new { id = deliveryMan.Id.ToString() }, deliveryMan);
         }
 
+        //[HttpPost]
+        //public ActionResult<Order> Create(Order order)
+        //{
+        //    order.SetAddress(order.addressLon, order.addressLat);
+        //    _orderRepository.Create(order);
+        //    return CreatedAtRoute("GetOrder", new { id = order.Id.ToString() }, order);
+        //}
+
+
 
 
 

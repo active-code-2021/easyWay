@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyWay.Core.Entities
 {
+    [Serializable]
    public class Address
     {
         [BsonId]
@@ -18,7 +19,8 @@ namespace EasyWay.Core.Entities
         public double Lat { get; set; }
         [BsonElement("lng")]
         public double Lng { get; set; }
-
+        [BsonElement("addressLine")]
+        public string AddressLine { get; set; }
         public Address()
         {
 

@@ -58,6 +58,7 @@ namespace EasyWay.Data
             _deliveryMans.InsertOne(deliveryMan);
             return deliveryMan;
         }
+       
         public  bool DeliveryExists(string email)
         {
             var a = _deliveryMans.Find(d => d.Email == email).Count();

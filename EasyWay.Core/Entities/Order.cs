@@ -13,6 +13,7 @@ using JsonConverter = Newtonsoft.Json.JsonConverter;
 
 namespace EasyWay.Core.Entities
 {
+    [BsonIgnoreExtraElements]
     public class Order
     {
         [BsonId]
@@ -33,29 +34,31 @@ namespace EasyWay.Core.Entities
         [JsonProperty("phone")]
         [BsonElement("phone")]
         public string Phone { get; set; }
-        [JsonProperty("addressLat")]
-        [BsonElement("addressLat")]
-        public double addressLat { get; set; }
-        [JsonProperty("addressLon")]
-        [BsonElement("addressLon")]
-        public double addressLon { get; set; }
 
+        [JsonProperty("lat")]
+        [BsonElement("lat")]
+        public double Lat { get; set; }
+        [JsonProperty("lng")]
+        [BsonElement("lng")]
+        public double Lng { get; set; }
+        [JsonProperty("addressLine")]
+        [BsonElement("addressLine")]
+        public string AddressLine { get; set; }
+        //
         [JsonProperty("deliverymanNum")]
         [BsonElement("deliverymanNum")]
         public int DeliverymanNum { get; set; }
-
+        //[JsonProperty("deliverymanName")]
+        //[BsonElement("deliverymanName")]
+        //public string DeliverymanName { get; set; }
         public DeliveryMan deliveryMan;
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [BsonElement("address")]
-        public GeoJsonPoint<GeoJson2DGeographicCoordinates> Address { get; private set; }
 
-
-        public void SetAddress(double lon, double lat)
-        {
-            Address = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
-                  new GeoJson2DGeographicCoordinates(lon, lat));
-        }
+        //public void SetAddress(double lon, double lat)
+        //{
+        //    Address = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+        //          new GeoJson2DGeographicCoordinates(lon, lat));
+        //}
         public void SetDeliverymanId(string id)
         {
           
@@ -66,6 +69,11 @@ namespace EasyWay.Core.Entities
 
             this.DeliverymanNum = num;
         }
+        //public void SetDeliverymanName(string name)
+        //{
+
+        //    this.DeliverymanName = name;
+        //}
 
     }
 
