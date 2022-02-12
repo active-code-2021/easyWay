@@ -137,8 +137,14 @@ namespace EasyWay.Services
             List<string> route = new List<string>();
             for (int i = 0; i < deliveyman.Count; ++i)
             {
+                var id = "";
                 // File.AppendAllText("log.txt", "Route for Vehicle {0}:", i);
-                var id = deliveyman[i].Id; // 
+                if (!deliveyman[i].Active )
+                {
+                   
+                    continue;
+                }// 
+                id = deliveyman[i].Id;
                 long routeDistance = 0;
                 var index = routing.Start(i);
                 int numOfOrder = 0;
@@ -153,7 +159,11 @@ namespace EasyWay.Services
                     orders[node].SetDeliverymanId(id);
                     orders[node].SetDeliverymanNum(numOfOrder);
                     _OrderRepository.Update(orders[node].Id, orders[node]);
-                    numOfOrder++;
+                    if (orders[node].Id != "61e84b7bad23421e2c4ba6d9")
+
+                        numOfOrder++;
+                    else
+                        numOfOrder=0;
                 }
                 sb.AppendLine($"{manager.IndexToNode((int)index)}");
                 sb.AppendLine($"Distance of the route: {routeDistance}m");

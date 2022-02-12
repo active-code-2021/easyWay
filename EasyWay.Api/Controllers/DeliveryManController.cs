@@ -71,22 +71,37 @@ namespace EasyWay.Api.Controllers
         }
 
 
-       
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, DeliveryMan deliveryManIn)
+
+        [HttpPut("update-deliveryman")]
+        public IActionResult Update(DeliveryMan deliveryManIn)
         {
-            var customer = _deliveryManRepository.Get(id);
+            var customer = _deliveryManRepository.Get(deliveryManIn.Id);
 
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _deliveryManRepository.Update(id, deliveryManIn);
+            _deliveryManRepository.Update(deliveryManIn.Id, deliveryManIn);
 
             return NoContent();
         }
+        //[HttpPut("confirm-order/{id}")]
+        //public ActionResult<Order> Update(string id)
+        //{
+        //    var order = _orderRepository.Get(id);
+
+        //    if (order == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    order.DoneOrNot = true;
+        //    _orderRepository.Update(id, order);
+
+
+        //    return _orderRepository.Get(id);
+        //}
 
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete(string id)

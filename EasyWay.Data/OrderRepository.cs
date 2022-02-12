@@ -32,11 +32,16 @@ namespace EasyWay.Data
             Order warehuose = _orders.Find(o => o.Id.Equals("61e84b7bad23421e2c4ba6d9")).FirstOrDefault();
             return warehuose;
         }
-        public Order Get(string id) =>
+        public List<Order> HasDeliverymanId()
+        {
+            var order = _orders.Find(o => o.DeliverymanId == null);
+            return order.ToList();
+        }
+    public Order Get(string id) =>
             _orders.Find<Order>(order => order.Id == id).FirstOrDefault();
 
         public List<Order> GetByDeliveryManId(string id) =>
-            _orders.Find<Order>(order => order.DeliverymanId == id).ToList();
+            _orders.Find<Order>(order => order.DeliverymanId == id).ToEnumerable().OrderBy(x=>x.DeliverymanNum).ToList();
 
         public Order Create(Order order)
         {
