@@ -46,6 +46,8 @@ namespace EasyWay.Data
             //   return deliveryMan.GetValue("_id").ToString();
             return null;
         }
+        public List< DeliveryMan> GetActiveDeliveryman() =>
+            _deliveryMans.Find<DeliveryMan>(deliveryMan => deliveryMan.Active).ToList();
 
         public DeliveryMan Get(string id) =>
             _deliveryMans.Find<DeliveryMan>(deliveryMan => deliveryMan.Id == id).FirstOrDefault();

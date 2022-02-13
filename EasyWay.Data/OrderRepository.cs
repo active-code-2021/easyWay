@@ -42,11 +42,7 @@ namespace EasyWay.Data
             Order warehuose = _orders.Find(o => o.Id.Equals("61e84b7bad23421e2c4ba6d9")).FirstOrDefault();
             return warehuose;
         }
-        public List<Order> HasDeliverymanId()
-        {
-            var order = _orders.Find(o => o.DeliverymanId == null);
-            return order.ToList();
-        }
+   
     public Order Get(string id) =>
             _orders.Find<Order>(order => order.Id == id).FirstOrDefault();
 

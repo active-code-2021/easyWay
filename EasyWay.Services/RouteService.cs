@@ -41,12 +41,12 @@ namespace EasyWay.Services
 
             var distanceMatrix = await CreateDistanceMatrix(orders);
 
-            var deliveyman = _deliveryManRepository.Get();
+            var deliveyman = _deliveryManRepository.GetActiveDeliveryman();
 
             //max value element
             // Create Routing Index Manager
             RoutingIndexManager manager =
-                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, deliveyman.Count(), 0); // TODO: don't force to return to warehouse
+                    new RoutingIndexManager(distanceMatrix.origin_addresses.Count, deliveyman.Count, 0); // TODO: don't force to return to warehouse
 
             // Create Routing Model.
             RoutingModel routing = new RoutingModel(manager);
@@ -57,7 +57,7 @@ namespace EasyWay.Services
                 // Convert from routing variable Index to distance matrix NodeIndex.
                 var fromNode = manager.IndexToNode(fromIndex);
                 var toNode = manager.IndexToNode(toIndex);
-                return distanceMatrix.rows[fromNode].elements[toNode].distance.value;
+                return distanceMatrix.rows[fromNode].elements[toNode].duration.value;
             });
 
             // Define cost of each arc.
@@ -66,11 +66,11 @@ namespace EasyWay.Services
             var maxValueDistance = distanceMatrix.rows.Max(r => r.elements.Sum(e => e.distance.value));
 
             // Add Distance constraint.
-            routing.AddDimension(transitCallbackIndex, 0, maxValueDistance * 2, // TODO: calc max distance 
+            routing.AddDimension(transitCallbackIndex, 0, 5*60*60, // TODO: calc max distance 
                                  true, // start cumul to zero
                                  "Distance");
             RoutingDimension distanceDimension = routing.GetMutableDimension("Distance");
-            //distanceDimension.SetGlobalSpanCostCoefficient(100000);
+            distanceDimension.SetGlobalSpanCostCoefficient(5*60*60 * deliveyman.Count);
 
             // Setting first solution heuristic.
             RoutingSearchParameters searchParameters =
@@ -159,7 +159,7 @@ namespace EasyWay.Services
                     var node = manager.IndexToNode((int)index);
                     route.Add(data.origin_addresses[node]);
                     orders[node].SetDeliverymanId(id);
-                   // orders[node].SetDeliverymanName(delivarymanName);
+                    orders[node].SetDeliverymanName(delivarymanName);
                     if (orders[node].Id == "61e84b7bad23421e2c4ba6d9")
                         orders[node].SetDeliverymanNum(0);
                     else
